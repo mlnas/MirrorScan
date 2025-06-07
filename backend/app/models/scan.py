@@ -1,8 +1,36 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, ForeignKey, Enum
-from sqlalchemy.sql import func
+from datetime import datetime
+from typing import Dict, List, Optional
 import enum
+from sqlalchemy import Column, Integer, String, DateTime, JSON, Float, ForeignKey, func
+from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
+
+class Scan(Base):
+    id = Column(Integer, primary_key=True, index=True)
+    scan_type = Column(String, nullable=False)  # memory, embedding, redteam, etc.
+    status = Column(String, nullable=False)  # running, completed, failed
+    created_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)
+    
+    # Input data
+    model_name = Column(String, nullable=False)
+    input_text = Column(String, nullable=True)
+    input_embeddings = Column(JSON, nullable=True)  # For embedding scans
+    
+    # Results
+    threat_level = Column(Float, nullable=True)  # 0-1 score
+    findings = Column(JSON, nullable=True)  # Detailed scan results
+    memory_traces = Column(JSON, nullable=True)  # For memory scans
+    pii_detected = Column(JSON, nullable=True)  # For PII scans
+    attack_vectors = Column(JSON, nullable=True)  # For red team scans
+    model_fingerprint = Column(JSON, nullable=True)  # For fingerprinting
+    
+    # Metadata
+    ip_address = Column(String, nullable=True)
+    user_agent = Column(String, nullable=True)
+    runtime_ms = Column(Integer, nullable=True)
+    error_message = Column(String, nullable=True)
 
 class ScanStatus(str, enum.Enum):
     PENDING = "pending"

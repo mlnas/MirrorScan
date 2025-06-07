@@ -23,4 +23,6 @@ def main() -> None:
     logger.info("Initial data created")
 
 if __name__ == "__main__":
-    main() 
+    print("Creating initial database...")
+    init_db()
+    print("Database initialized successfully.") 
